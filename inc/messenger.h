@@ -6,7 +6,7 @@
 /*   By: anakin <anakin@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/30 07:20:09 by anakin            #+#    #+#             */
-/*   Updated: 2025/07/01 20:08:17 by anakin           ###   ########.fr       */
+/*   Updated: 2025/07/01 20:41:37 by anakin           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,7 +23,6 @@
 # include <pthread.h>       // threading
 # include <time.h>          // time, srand
 # include <errno.h>         // error handling
-# include "get_next_line.h"
 
 extern int socket_fd;
 
@@ -55,6 +54,17 @@ extern int	running;
 extern char	my_username[USERNAME_SIZE];
 extern char	my_id[ID_SIZE];
 
+typedef struct s_client
+{
+	char		name[USERNAME_SIZE];
+	char		id[ID_SIZE];
+	char		msg[MESSAGE_SIZE];
+	char		formatted_msg[BUFFER_SIZE];
+	pthread_t	thread_id;
+	int			active;
+	int			socket_fd;
+}			t_client;
+
 // server globels
 extern pthread_mutex_t clients_mutex;
 extern t_client clients[MAX_CLIENTS];
@@ -73,16 +83,5 @@ void	broadcast_notification(int client_index, const char *msg);
 void	*handle_client(void *arg);
 void	disconnect_client(int client_index);
 int	accept_client(int server_socket);
-
-typedef struct s_client
-{
-	char		name[USERNAME_SIZE];
-	char		id[ID_SIZE];
-	char		msg[MESSAGE_SIZE];
-	char		formatted_msg[BUFFER_SIZE];
-	pthread_t	thread_id;
-	int			active;
-	int			socket_fd;
-}			t_client;
 
 #endif

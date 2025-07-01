@@ -7,7 +7,7 @@ int	check_input(char *input, char **hash, char **space)
 	*hash = strchr(input + 1, '#');
 	if (!hash)
 		return (1);
-	*space = strchr(hash + 1, ' ');
+	*space = strchr(*hash + 1, ' ');
 	if (!space)
 		return (1);
 	return (0);
@@ -19,7 +19,7 @@ static void	extract_data(char *target_data, char *src, char *diff, int max)
 
 	len = src - (diff + 1);
 	if (len >= max)
-		return (1);
+		return;
 	strncpy(target_data, diff + 1, len);
 	target_data[len] = '\0';
 }
@@ -28,7 +28,6 @@ int	parse_msg(char *input, char *target_name, char *target_id, char *msg)
 {
 	char	*hash;
 	char	*space;
-	int		len;
 
 	if (check_input(input, &hash, &space) == 1)
 		return (1);

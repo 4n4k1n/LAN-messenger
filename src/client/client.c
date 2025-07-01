@@ -17,7 +17,7 @@ int	connect_server(void)
 	server_addr.sin_addr.s_addr = inet_addr(SERVER_IP);
 	if (connect(socket_fd, (struct sockaddr*)&server_addr, sizeof(server_addr)) < 0)
 		return (perror("Server connection failed!"), close(socket_fd), -1);
-	printf("Connected to server!");
+	printf("Connected to server!\n");
 	return (0);
 }
 
@@ -32,9 +32,10 @@ static void	cleanup(pthread_t receive_thread)
 int	main(void)
 {
 	char		username[USERNAME_SIZE];
-	char		login_msg[USERNAME_SIZE + 10];\
+	char		login_msg[USERNAME_SIZE + 10];
 	char		input[BUFFER_SIZE];
 	t_client	target;
+	pthread_t	receive_thread_id;
 
 	if (connect_server() < 0)
 		return (1);
@@ -42,14 +43,14 @@ int	main(void)
 	FLUSH
 	if (!fgets(username, USERNAME_SIZE, stdin))
 		return (printf("failed to read username!"), close(socket_fd), 1);
-	username[strcspn(username, "\n")] = '\n';
+	username[strcspn(username, "\n")] = '\0';
 	if (!username[0])
 		return (printf("Username can not be empty!"), close(socket_fd), 1);
 	snprintf(login_msg, sizeof(login_msg), "LOGIN:%s", username);
 	if (send(socket_fd, login_msg, strlen(login_msg), 0) < 0)
 		return (printf("Faild to send username!"), close(socket_fd), 1);
 	printf("Logging in...\n");
-	if (pthread_create(&target.thread_id, NULL, receive_msg, NULL) != 0)
+	if (pthread_create(&receive_thread_id, NULL, receive_msg, NULL) != 0)
 		return (printf("Failed to create receive thread!"), close(socket_fd), 1);
 	while (running)
 	{
@@ -66,18 +67,16 @@ int	main(void)
 				send(socket_fd, "LIST", 4, 0);
 			else if (input[0] == '@')
 			{
-				if (parse_msg(input, target.name, target.id, target.msg))
+				if (parse_msg(input, target.name, target.id, target.msg) == 0)
 				{
 					snprintf(target.formatted_msg, sizeof(target.formatted_msg), "PRIVATE:%s:%s:%s", \
 						target.name, target.id, target.msg);
-					if (send(socket_fd, target.formatted_msg, sizeof(target.formatted_msg), 0) < 0)
+					if (send(socket_fd, target.formatted_msg, strlen(target.formatted_msg), 0) < 0)
 						perror("Failed to dend message!");
-					else
-					{
-						printf("Invalid format! Use: @username#id message\n");
-						printf("> ");
-						FLUSH
-					}
+				}
+				else
+				{
+					printf("Invalid format! Use: @username#id message\n");
 				}
 			}
 			else
@@ -86,12 +85,11 @@ int	main(void)
 				printf("  @username#id message  - Send private message\n");
 				printf("  /list                 - Show online users\n");
 				printf("  /quit                 - Exit\n");
-				printf("> ");
-				FLUSH
 			}
 		}
 		else
 			running = 0;
 	}
-	return (cleanup(target.thread_id), 0);
+	cleanup(receive_thread_id);
+	return (0);
 }

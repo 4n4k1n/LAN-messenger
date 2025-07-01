@@ -17,7 +17,7 @@ void	generate_id(char *id)
 		pthread_mutex_lock(&clients_mutex);
 		for (int i = 0; i < client_count; i++)
 		{
-			if (clients[i].active && strcmp(id, clients[i].id == 0) == 0)
+			if (clients[i].active && strcmp(id, clients[i].id) == 0)
 			{
 				unique = 0;
 				break;
@@ -98,7 +98,7 @@ void	disconnect_client(int client_index)
 	if (client_index < 0 || client_index > MAX_CLIENTS || !clients[client_index].active)
 		return;
 	printf("[SERVER] %s#%s disconnected!\n", clients[client_index].name, clients[client_index].id);
-	snprintf(msg, BUFFER_SIZE, "%s#%s ledt the room!");
+	snprintf(msg, BUFFER_SIZE, "%s#%s left the room!", clients[client_index].name, clients[client_index].id);
 	broadcast_notification(client_index, msg);
 	close(clients[client_index].socket_fd);
 	clients[client_index].active = 0;
@@ -164,6 +164,7 @@ void	*handle_client(void *arg)
 	char	buffer[BUFFER_SIZE];
 	int		bytes;
 
+	client_index = *((int *)arg);
 	while (clients[client_index].active)
 	{
 		bytes = recv(clients[client_index].socket_fd, buffer, sizeof(buffer) - 1, 0);

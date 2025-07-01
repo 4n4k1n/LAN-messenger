@@ -71,7 +71,7 @@ static void	receive_type_list(char *buffer)
 	char	*users;
 	char	*user;
 	int		count;
-	char	*my_full_data[USERNAME_SIZE + ID_SIZE + 2];
+	char	my_full_data[USERNAME_SIZE + ID_SIZE + 2];
 
 	users = buffer + 5;
 	user = strtok(users, ",");
@@ -92,6 +92,7 @@ static void	receive_type_list(char *buffer)
 
 void	*receive_msg(void *arg)
 {
+	(void)arg;
 	char	buffer[BUFFER_SIZE];
 	int		bytes;
 
@@ -115,7 +116,7 @@ void	*receive_msg(void *arg)
 			else if (strncmp(buffer, "NOTIFY:", 7) == 0)
 				printf("*** %s ***\n", buffer + 7);
 			else
-				printf("Server: %s\n");
+				printf("Server: %s\n", buffer);
 			write(1, "> ", 2);
 			FLUSH
 		}
