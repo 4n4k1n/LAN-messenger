@@ -10,7 +10,7 @@ void	generate_id(char *id)
 	int	random_id;
 
 #ifdef DEBUG
-	printf("[DEBUG] Starting ID generation (mutex already locked)\n");
+	printf(COLOR_CYAN "[DEBUG]" COLOR_RESET " Starting ID generation (mutex already locked)\n");
 #endif
 	unique = 0;
 	while (!unique)
@@ -18,7 +18,7 @@ void	generate_id(char *id)
 		random_id = rand() % 9000 + 1000;
 		snprintf(id, ID_SIZE, "%d", random_id);
 #ifdef DEBUG
-		printf("[DEBUG] Trying ID: %s\n", id);
+		printf(COLOR_CYAN "[DEBUG]" COLOR_RESET " Trying ID: " COLOR_YELLOW "%s" COLOR_RESET "\n", id);
 #endif
 		unique = 1;
 		for (int i = 0; i < client_count; i++)
@@ -26,7 +26,7 @@ void	generate_id(char *id)
 			if (clients[i].active && strcmp(id, clients[i].id) == 0)
 			{
 #ifdef DEBUG
-				printf("[DEBUG] ID %s already exists, retrying\n", id);
+				printf(COLOR_CYAN "[DEBUG]" COLOR_RESET " ID " COLOR_YELLOW "%s" COLOR_RESET " already exists, retrying\n", id);
 #endif
 				unique = 0;
 				break;
@@ -34,7 +34,7 @@ void	generate_id(char *id)
 		}
 	}
 #ifdef DEBUG
-	printf("[DEBUG] ID generation complete: %s\n", id);
+	printf(COLOR_CYAN "[DEBUG]" COLOR_RESET " ID generation complete: " COLOR_BRIGHT_GREEN "%s" COLOR_RESET "\n", id);
 #endif
 }
 
@@ -44,7 +44,7 @@ int	send_to_client(int client_index, const char *msg)
 		return (-1);
 	if (send(clients[client_index].socket_fd, msg, strlen(msg), 0) < 0)
 	{
-		printf("[SERVER] Failed to send to client %s#%s !\n", \
+		printf(COLOR_BRIGHT_RED "[SERVER]" COLOR_RESET " Failed to send to client " COLOR_BOLD_CYAN "%s#%s" COLOR_RESET " !\n", \
 			clients[client_index].name, clients[client_index].id);
 		return (-1);
 	}
@@ -108,7 +108,7 @@ void	disconnect_client(int client_index)
 
 	if (client_index < 0 || client_index > MAX_CLIENTS || !clients[client_index].active)
 		return;
-	printf("[SERVER] %s#%s disconnected!\n", clients[client_index].name, clients[client_index].id);
+	printf(COLOR_BRIGHT_YELLOW "[SERVER]" COLOR_RESET " " COLOR_BOLD_CYAN "%s#%s" COLOR_RESET " disconnected!\n", clients[client_index].name, clients[client_index].id);
 	snprintf(msg, BUFFER_SIZE, "%s#%s left the room!", clients[client_index].name, clients[client_index].id);
 	broadcast_notification(client_index, msg);
 	close(clients[client_index].socket_fd);
@@ -124,7 +124,7 @@ void	handle_client_message(int client_index, const char *msg)
 	int		target_index;
 	char	modified_msg[BUFFER_SIZE];
 
-	printf("[SERVER] Message from %s#%s: %s\n", \
+	printf(COLOR_BRIGHT_BLUE "[SERVER]" COLOR_RESET " Message from " COLOR_BOLD_CYAN "%s#%s" COLOR_RESET ": " COLOR_WHITE "%s" COLOR_RESET "\n", \
 		clients[client_index].name, clients[client_index].id, msg);
 	if (strncmp(msg, "PRIVATE:", 8) == 0)
 	{
@@ -186,7 +186,7 @@ void	*handle_client(void *arg)
 		}
 		else if (bytes == 0)
 		{
-			printf("[SERVER] Client %s#%s disconnected!\n", \
+			printf(COLOR_BRIGHT_YELLOW "[SERVER]" COLOR_RESET " Client " COLOR_BOLD_CYAN "%s#%s" COLOR_RESET " disconnected!\n", \
 				clients[client_index].name, clients[client_index].id);
 				break;
 		}
@@ -221,8 +221,8 @@ int	main(void)
         return (perror("Bind failed"), close(server_socket), 1);
 	if (listen(server_socket, 5) < 0)
 		return (perror("listen failed!"), close(server_socket), 1);
-	printf("[SERVER] Chat server listening on port %d\n", SERVER_PORT);
-    printf("[SERVER] Press Ctrl+C to stop\n");
+	printf(COLOR_BRIGHT_GREEN "[SERVER]" COLOR_RESET " Chat server listening on port " COLOR_BOLD_YELLOW "%d" COLOR_RESET "\n", SERVER_PORT);
+    printf(COLOR_BRIGHT_GREEN "[SERVER]" COLOR_RESET " Press " COLOR_BOLD_RED "Ctrl+C" COLOR_RESET " to stop\n");
 	while (1)
 		accept_client(server_socket);
 	close(server_socket);

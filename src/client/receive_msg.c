@@ -25,13 +25,13 @@ static void	receive_type_welcome(char *buffer)
 		id_start++;
 		strcpy(my_username, username_start);
 		strcpy(my_id, id_start);
-		printf("\n=== Personal Messages ===\n");
-		printf("You are: %s#%s\n", my_username, my_id);
-		printf("\nCommands:\n");
-		printf("  @username#id message  - Send private message\n");
-		printf("  /list                 - Show online users\n");
-		printf("  /quit                 - Exit\n");
-		printf("\n" "================================" "\n");
+		printf(COLOR_BOLD_MAGENTA "\n=== Personal Messages ===" COLOR_RESET "\n");
+		printf("You are: " COLOR_BOLD_CYAN "%s#%s" COLOR_RESET "\n", my_username, my_id);
+		printf(COLOR_BOLD_YELLOW "\nCommands:" COLOR_RESET "\n");
+		printf("  " COLOR_CYAN "@username#id message" COLOR_RESET "  - Send private message\n");
+		printf("  " COLOR_CYAN "/list" COLOR_RESET "                 - Show online users\n");
+		printf("  " COLOR_CYAN "/quit" COLOR_RESET "                 - Exit\n");
+		printf(COLOR_BOLD_MAGENTA "\n" "================================" COLOR_RESET "\n");
 	}
 }
 
@@ -46,7 +46,7 @@ static void	receive_type_msg(char *buffer)
 	{
 		*message = '\0';
 		message++;
-		printf("[%s → You]: %s\n", sender, message);
+		printf(COLOR_BRIGHT_GREEN "[" COLOR_BOLD_CYAN "%s" COLOR_BRIGHT_GREEN " → You]: " COLOR_WHITE "%s" COLOR_RESET "\n", sender, message);
 	}
 }
 
@@ -61,13 +61,13 @@ static void	receive_type_sent(char *buffer)
 	{
 		*message = '\0';
 		message++;
-		printf("[You → %s]: %s\n", receiver, message);
+		printf(COLOR_BRIGHT_BLUE "[You → " COLOR_BOLD_CYAN "%s" COLOR_BRIGHT_BLUE "]: " COLOR_WHITE "%s" COLOR_RESET "\n", receiver, message);
 	}
 }
 
 static void	receive_type_list(char *buffer)
 {
-	printf("\nOnline users:\n");
+	printf(COLOR_BOLD_YELLOW "\nOnline users:" COLOR_RESET "\n");
 	char	*users;
 	char	*user;
 	int		count;
@@ -78,14 +78,14 @@ static void	receive_type_list(char *buffer)
 	
 	while (user != NULL)
 	{
-		printf("  %s\n", user);
+		printf("  " COLOR_BOLD_CYAN "%s" COLOR_RESET "\n", user);
 		count++;
 		user = strtok(NULL, ",");
 	}
 	if (count == 0)
-		printf("  No users online\n");
+		printf("  " COLOR_GRAY "No users online" COLOR_RESET "\n");
 	else
-		printf("Total: %d user(s) online\n", count);
+		printf(COLOR_BOLD_GREEN "Total: %d user(s) online" COLOR_RESET "\n", count);
 }
 
 void	*receive_msg(void *arg)
@@ -110,17 +110,17 @@ void	*receive_msg(void *arg)
 			else if (strncmp(buffer, "LIST:", 5) == 0)
 				receive_type_list(buffer);
 			else if (strncmp(buffer, "ERROR:", 6) == 0)
-				printf("Error: %s\n", buffer + 6);
+				printf(COLOR_BRIGHT_RED "Error: %s" COLOR_RESET "\n", buffer + 6);
 			else if (strncmp(buffer, "NOTIFY:", 7) == 0)
-				printf("*** %s ***\n", buffer + 7);
+				printf(COLOR_BRIGHT_YELLOW "*** %s ***" COLOR_RESET "\n", buffer + 7);
 			else
-				printf("Server: %s\n", buffer);
+				printf(COLOR_BRIGHT_MAGENTA "Server: %s" COLOR_RESET "\n", buffer);
 			write(1, "> ", 2);
 			FLUSH
 		}
 		else if (!bytes)
 		{
-			printf("\nServer disconnected\n");
+			printf(COLOR_BRIGHT_RED "\nServer disconnected" COLOR_RESET "\n");
 			running = 0;
 			break;
 		}

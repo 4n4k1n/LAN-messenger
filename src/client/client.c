@@ -17,13 +17,13 @@ int	connect_server(void)
 	server_addr.sin_addr.s_addr = inet_addr(SERVER_IP);
 	if (connect(socket_fd, (struct sockaddr*)&server_addr, sizeof(server_addr)) < 0)
 		return (perror("Server connection failed!"), close(socket_fd), -1);
-	printf("Connected to server!\n");
+	printf(COLOR_BRIGHT_GREEN "Connected to server!" COLOR_RESET "\n");
 	return (0);
 }
 
 static void	cleanup(pthread_t receive_thread)
 {
-	printf("\nShutting down...\n");
+	printf(COLOR_BRIGHT_YELLOW "\nShutting down..." COLOR_RESET "\n");
 	send(socket_fd, "QUIT", 4, 0);
 	pthread_join(receive_thread, NULL);
 	close(socket_fd);
@@ -39,19 +39,19 @@ int	main(void)
 
 	if (connect_server() < 0)
 		return (1);
-	printf("Enter username: ");
+	printf(COLOR_BOLD_CYAN "Enter username: " COLOR_RESET);
 	FLUSH
 	if (!fgets(username, USERNAME_SIZE, stdin))
-		return (printf("failed to read username!"), close(socket_fd), 1);
+		return (printf(COLOR_BRIGHT_RED "failed to read username!" COLOR_RESET), close(socket_fd), 1);
 	username[strcspn(username, "\n")] = '\0';
 	if (!username[0])
-		return (printf("Username can not be empty!"), close(socket_fd), 1);
+		return (printf(COLOR_BRIGHT_RED "Username can not be empty!" COLOR_RESET), close(socket_fd), 1);
 	snprintf(login_msg, sizeof(login_msg), "LOGIN:%s", username);
 	if (send(socket_fd, login_msg, strlen(login_msg), 0) < 0)
-		return (printf("Faild to send username!"), close(socket_fd), 1);
-	printf("Logging in...\n");
+		return (printf(COLOR_BRIGHT_RED "Faild to send username!" COLOR_RESET), close(socket_fd), 1);
+	printf(COLOR_BRIGHT_BLUE "Logging in..." COLOR_RESET "\n");
 	if (pthread_create(&receive_thread_id, NULL, receive_msg, NULL) != 0)
-		return (printf("Failed to create receive thread!"), close(socket_fd), 1);
+		return (printf(COLOR_BRIGHT_RED "Failed to create receive thread!" COLOR_RESET), close(socket_fd), 1);
 	while (running)
 	{
 		write(1, "> ", 2);
@@ -76,15 +76,15 @@ int	main(void)
 				}
 				else
 				{
-					printf("Invalid format! Use: @username#id message\n");
+					printf(COLOR_BRIGHT_RED "Invalid format!" COLOR_RESET " Use: " COLOR_CYAN "@username#id message" COLOR_RESET "\n");
 				}
 			}
 			else
 			{
-				printf("Commands:\n");
-				printf("  @username#id message  - Send private message\n");
-				printf("  /list                 - Show online users\n");
-				printf("  /quit                 - Exit\n");
+				printf(COLOR_BOLD_YELLOW "Commands:" COLOR_RESET "\n");
+				printf("  " COLOR_CYAN "@username#id message" COLOR_RESET "  - Send private message\n");
+				printf("  " COLOR_CYAN "/list" COLOR_RESET "                 - Show online users\n");
+				printf("  " COLOR_CYAN "/quit" COLOR_RESET "                 - Exit\n");
 			}
 		}
 		else
