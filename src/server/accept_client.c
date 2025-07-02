@@ -27,23 +27,31 @@ int	wait_for_username(char *buffer, int client_socket)
 {
     int bytes;
 	
-	bytes = recv(client_socket, buffer, sizeof(buffer) - 1, 0);
+	printf("[DEBUG] Waiting for username from client...\n");
+	bytes = recv(client_socket, buffer, BUFFER_SIZE - 1, 0);
     if (bytes <= 0) {
+        printf("[DEBUG] Failed to receive username, bytes: %d\n", bytes);
         pthread_mutex_unlock(&clients_mutex);
         close(client_socket);
         return (1);
     }
     buffer[bytes] = '\0';
+	printf("[DEBUG] Received from client: '%s' (%d bytes)\n", buffer, bytes);
 	return (0);
 }
 
 void	init_client(int client_index, int client_socket, char *username)
 {
+	printf("[DEBUG] Initializing client %d\n", client_index);
 	clients[client_index].socket_fd = client_socket;
+	clients[client_index].index = client_index;
 	strncpy(clients[client_index].name, username, USERNAME_SIZE - 1);
 	clients[client_index].name[USERNAME_SIZE - 1] = '\0';
+	printf("[DEBUG] About to generate ID for client %d\n", client_index);
 	generate_id(clients[client_index].id);
+	printf("[DEBUG] Generated ID: %s for client %d\n", clients[client_index].id, client_index);
 	clients[client_index].active = 1;
+	printf("[DEBUG] Client %d initialized, unlocking mutex\n", client_index);
 	pthread_mutex_unlock(&clients_mutex);
 }
 
@@ -53,7 +61,11 @@ void	send_welcome_msg(int client_index, struct sockaddr_in client_addr)
 
 	snprintf(msg, sizeof(msg), "WELCOME:%s:%s", \
 		clients[client_index].name, clients[client_index].id);
-	send_to_client(client_index, msg);
+	printf("[DEBUG] Welcome message: '%s'\n", msg);
+	if (send_to_client(client_index, msg) == 0)
+		printf("[DEBUG] Welcome message sent successfully\n");
+	else
+		printf("[DEBUG] Failed to send welcome message\n");
 	printf("[SERVER] %s#%s connected from %s!\n", \
 		clients[client_index].name, clients[client_index].id, \
 		inet_ntoa(client_addr.sin_addr));
@@ -70,7 +82,7 @@ void	notify_other_clients(int client_index)
 
 int	create_thread_for_client(int client_index)
 {
-	if (pthread_create(&clients[client_index].thread_id, NULL, handle_client, &client_index) != 0)
+	if (pthread_create(&clients[client_index].thread_id, NULL, handle_client, &clients[client_index].index) != 0)
 	{
 		perror("Failed to create client thread!");
 		disconnect_client(client_index);
@@ -98,9 +110,15 @@ int	accept_client(int server_socket)
 	if (find_free_client(client_socket, &client_index) == 1 || wait_for_username(buffer, client_socket) == 1)
 		return (-1);
 	if (strncmp(buffer, "LOGIN:", 6) != 0)
+	{
+		printf("[DEBUG] Invalid login format: '%s'\n", buffer);
 		return (pthread_mutex_unlock(&clients_mutex), close(client_socket), -1);
+	}
 	username = buffer + 6;
+	printf("[DEBUG] Login successful, username: '%s'\n", username);
 	init_client(client_index, client_socket, username);
+	printf("[DEBUG] Sending welcome message to client %d\n", client_index);
+	send_welcome_msg(client_index, client_addr);
 	notify_other_clients(client_index);
 	if (create_thread_for_client(client_index) == 1)
 		return (-1);
