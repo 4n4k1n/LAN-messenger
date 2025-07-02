@@ -6,7 +6,7 @@
 /*   By: anakin <anakin@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/30 19:41:13 by anakin            #+#    #+#             */
-/*   Updated: 2025/07/01 07:24:35 by anakin           ###   ########.fr       */
+/*   Updated: 2025/07/02 06:12:14 by anakin           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -65,29 +65,29 @@ static void	receive_type_sent(char *buffer)
 	}
 }
 
+// Fixed receive_type_list function in src/client/receive_msg.c
+
 static void	receive_type_list(char *buffer)
 {
 	printf("\nOnline users:\n");
 	char	*users;
 	char	*user;
 	int		count;
-	char	my_full_data[USERNAME_SIZE + ID_SIZE + 2];
 
 	users = buffer + 5;
 	user = strtok(users, ",");
 	count = 0;
-	while (users)
+	
+	while (user != NULL)
 	{
-		snprintf(my_full_data, sizeof(my_full_data), "%s#%s", my_username, my_id);
-		if (strcmp(user, my_username) != 0)
-		{
-			printf("	%s\n", user);
-			count++;
-		}
+		printf("  %s\n", user);
+		count++;
 		user = strtok(NULL, ",");
 	}
-	if (!count)
-		printf("No other users online!");
+	if (count == 0)
+		printf("  No users online\n");
+	else
+		printf("Total: %d user(s) online\n", count);
 }
 
 void	*receive_msg(void *arg)
