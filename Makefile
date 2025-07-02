@@ -1,11 +1,12 @@
 # Simple Makefile for Chat Application
 
 CC = gcc
-CFLAGS = -Wall -Wextra -pthread
-LDFLAGS = -pthread
+CFLAGS = -Wall -Wextra -Werror -pthread
+LDFLAGS = -pthread -fsanitize=address,undefined
 
 # Directory structure
 SRC_DIR = src
+OBJ_DIR = obj
 SERVER_DIR = $(SRC_DIR)/server
 CLIENT_DIR = $(SRC_DIR)/client
 
@@ -26,6 +27,11 @@ client: $(CLIENT_SOURCES)
 	$(CC) $(CFLAGS) -o client $(CLIENT_SOURCES) $(LDFLAGS)
 
 clean:
-	rm -f server client
+	rm -rf $(OBJ_DIR)
 
-.PHONY: all clean
+fclean: clean
+	rm -f client server
+
+re: fclean all
+
+.PHONY: all client server clean fclean re
