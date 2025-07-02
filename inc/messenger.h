@@ -63,6 +63,7 @@ typedef struct s_client
 	pthread_t	thread_id;
 	int			active;
 	int			socket_fd;
+	int			index;
 }			t_client;
 
 // server globels
