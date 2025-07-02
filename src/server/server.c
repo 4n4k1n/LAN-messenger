@@ -9,22 +9,25 @@ void	generate_id(char *id)
 	int	unique;
 	int	random_id;
 
+	printf("[DEBUG] Starting ID generation (mutex already locked)\n");
 	unique = 0;
 	while (!unique)
 	{
 		random_id = rand() % 9000 + 1000;
 		snprintf(id, ID_SIZE, "%d", random_id);
-		pthread_mutex_lock(&clients_mutex);
+		printf("[DEBUG] Trying ID: %s\n", id);
+		unique = 1;
 		for (int i = 0; i < client_count; i++)
 		{
 			if (clients[i].active && strcmp(id, clients[i].id) == 0)
 			{
+				printf("[DEBUG] ID %s already exists, retrying\n", id);
 				unique = 0;
 				break;
 			}
 		}
-		pthread_mutex_unlock(&clients_mutex);
 	}
+	printf("[DEBUG] ID generation complete: %s\n", id);
 }
 
 int	send_to_client(int client_index, const char *msg)
@@ -68,7 +71,7 @@ void	send_user_list(int client_index)
 			if (!first)
 				strcat(user_list, ",");
 			snprintf(buffer, sizeof(buffer), "%s#%s", \
-				clients[client_index].name, clients[client_index].id);
+				clients[i].name, clients[i].id);
 			strcat(user_list, buffer);
 			first = 0;
 		}
@@ -129,7 +132,7 @@ void	handle_client_message(int client_index, const char *msg)
 			{
 				snprintf(modified_msg, sizeof(modified_msg), "MSG:%s#%s:%s", \
 					clients[client_index].name, clients[client_index].id, content);
-				if (send_to_client(target_index, content) == 0)
+				if (send_to_client(target_index, modified_msg) == 0)
 				{
 					snprintf(modified_msg, sizeof(modified_msg), "SENT:%s#%s:%s", \
 						target_name, target_id, content);
