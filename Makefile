@@ -2,6 +2,7 @@
 
 CC = gcc
 CFLAGS = -Wall -Wextra -Werror -pthread
+DEBUG_CFLAGS = -Wall -Wextra -Werror -pthread -DDEBUG
 LDFLAGS = -pthread -fsanitize=address,undefined
 
 # Directory structure
@@ -26,6 +27,14 @@ server: $(SERVER_SOURCES)
 client: $(CLIENT_SOURCES)
 	$(CC) $(CFLAGS) -o client $(CLIENT_SOURCES) $(LDFLAGS)
 
+debug: server-debug client-debug
+
+server-debug: $(SERVER_SOURCES)
+	$(CC) $(DEBUG_CFLAGS) -o server $(SERVER_SOURCES) $(LDFLAGS)
+
+client-debug: $(CLIENT_SOURCES)
+	$(CC) $(DEBUG_CFLAGS) -o client $(CLIENT_SOURCES) $(LDFLAGS)
+
 clean:
 	rm -rf $(OBJ_DIR)
 
@@ -34,4 +43,4 @@ fclean: clean
 
 re: fclean all
 
-.PHONY: all client server clean fclean re
+.PHONY: all client server debug server-debug client-debug clean fclean re

@@ -9,25 +9,33 @@ void	generate_id(char *id)
 	int	unique;
 	int	random_id;
 
+#ifdef DEBUG
 	printf("[DEBUG] Starting ID generation (mutex already locked)\n");
+#endif
 	unique = 0;
 	while (!unique)
 	{
 		random_id = rand() % 9000 + 1000;
 		snprintf(id, ID_SIZE, "%d", random_id);
+#ifdef DEBUG
 		printf("[DEBUG] Trying ID: %s\n", id);
+#endif
 		unique = 1;
 		for (int i = 0; i < client_count; i++)
 		{
 			if (clients[i].active && strcmp(id, clients[i].id) == 0)
 			{
+#ifdef DEBUG
 				printf("[DEBUG] ID %s already exists, retrying\n", id);
+#endif
 				unique = 0;
 				break;
 			}
 		}
 	}
+#ifdef DEBUG
 	printf("[DEBUG] ID generation complete: %s\n", id);
+#endif
 }
 
 int	send_to_client(int client_index, const char *msg)
