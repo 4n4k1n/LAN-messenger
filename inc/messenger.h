@@ -97,7 +97,7 @@ extern t_client clients[MAX_CLIENTS];
 extern int client_count;
 
 // client functions
-int	connect_server(void);
+int	connect_server(const char *server_ip);
 int	check_input(char *input, char **hash, char **space);
 void	*receive_msg(void *arg);
 int	parse_msg(char *input, char *target_name, char *target_id, char *msg);

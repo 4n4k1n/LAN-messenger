@@ -5,7 +5,7 @@ int		running = 1;
 char	my_username[USERNAME_SIZE];
 char	my_id[ID_SIZE];
 
-int	connect_server(void)
+int	connect_server(const char *server_ip)
 {
 	struct sockaddr_in server_addr;
 
@@ -14,10 +14,10 @@ int	connect_server(void)
 		return (perror("Socket creation failed!"), -1);
 	server_addr.sin_family = AF_INET;
 	server_addr.sin_port = htons(SERVER_PORT);
-	server_addr.sin_addr.s_addr = inet_addr(SERVER_IP);
+	server_addr.sin_addr.s_addr = inet_addr(server_ip);
 	if (connect(socket_fd, (struct sockaddr*)&server_addr, sizeof(server_addr)) < 0)
 		return (perror("Server connection failed!"), close(socket_fd), -1);
-	printf(COLOR_BRIGHT_GREEN "Connected to server!" COLOR_RESET "\n");
+	printf(COLOR_BRIGHT_GREEN "Connected to server at %s!" COLOR_RESET "\n", server_ip);
 	return (0);
 }
 
@@ -29,15 +29,17 @@ static void	cleanup(pthread_t receive_thread)
 	close(socket_fd);
 }
 
-int	main(void)
+int	main(int argc, char **argv)
 {
 	char		username[USERNAME_SIZE];
 	char		login_msg[USERNAME_SIZE + 10];
 	char		input[BUFFER_SIZE];
 	t_client	target;
 	pthread_t	receive_thread_id;
+	const char	*server_ip;
 
-	if (connect_server() < 0)
+	server_ip = (argc > 1) ? argv[1] : SERVER_IP;
+	if (connect_server(server_ip) < 0)
 		return (1);
 	printf(COLOR_BOLD_CYAN "Enter username: " COLOR_RESET);
 	FLUSH
