@@ -6,7 +6,7 @@
 /*   By: anakin <anakin@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/30 19:41:13 by anakin            #+#    #+#             */
-/*   Updated: 2025/07/02 06:12:14 by anakin           ###   ########.fr       */
+/*   Updated: 2025/07/02 06:17:16 by anakin           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -64,8 +64,6 @@ static void	receive_type_sent(char *buffer)
 		printf("[You → %s]: %s\n", receiver, message);
 	}
 }
-
-// Fixed receive_type_list function in src/client/receive_msg.c
 
 static void	receive_type_list(char *buffer)
 {
