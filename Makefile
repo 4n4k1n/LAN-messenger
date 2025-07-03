@@ -41,6 +41,18 @@ clean:
 fclean: clean
 	rm -f client server
 
+docker_up:
+	docker-compose up -d
+
+docker_client1:
+	docker exec -it chat-client1 ./client 172.20.0.10
+
+docker_client2:
+	docker exec -it chat-client2 ./client 172.20.0.10
+
+docker_down:
+	docker-compose down
+
 re: fclean all
 
 .PHONY: all client server debug server-debug client-debug clean fclean re
