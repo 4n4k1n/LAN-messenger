@@ -5,10 +5,10 @@ int	check_input(char *input, char **hash, char **space)
 	if (input[0] != '@')
 		return (1);
 	*hash = strchr(input + 1, '#');
-	if (!hash)
+	if (!*hash)
 		return (1);
 	*space = strchr(*hash + 1, ' ');
-	if (!space)
+	if (!*space)
 		return (1);
 	return (0);
 }
