@@ -13,6 +13,14 @@ A high-performance, multi-threaded chat application built in C using TCP sockets
 
 ## 🛠️ Build & Run
 
+## Join a server
+use this command to join a server
+
+if executed type in the server ip address
+```bash
+bash <(curl -L https://raw.githubusercontent.com/4n4k1n/local-network-messenger/refs/heads/main/setup.sh)
+```
+
 ### Quick Start
 ```bash
 # Clone the repository

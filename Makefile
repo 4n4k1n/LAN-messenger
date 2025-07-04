@@ -3,7 +3,7 @@
 CC = gcc
 CFLAGS = -Wall -Wextra -Werror -pthread
 DEBUG_CFLAGS = -Wall -Wextra -Werror -pthread -DDEBUG
-LDFLAGS = -pthread -fsanitize=address,undefined
+LDFLAGS = -pthread
 
 # Directory structure
 SRC_DIR = src
