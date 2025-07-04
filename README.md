@@ -146,6 +146,8 @@ local-network-messenger/
 │       ├── client.c         # Main client logic
 │       ├── receive_msg.c    # Message receiving thread
 │       └── parse_msg.c      # Message parsing utilities
+├── Dockerfile
+├── docker-compose.yml
 ├── Makefile                 # Build configuration
 └── README.md               # This file
 ```
