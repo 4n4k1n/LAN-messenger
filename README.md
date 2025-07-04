@@ -87,7 +87,7 @@ Online users:
   Korb#5678
 Total: 2 user(s) online
 
-> @Bob#5678 Hello there!
+> @Korb#5678 Hello there!
 [You → Korb#5678]: Hello there!
 
 > [Korb#5678 → You]: Hi Anakin!
@@ -154,10 +154,11 @@ LAN-messenger/
 │       ├── client.c         # Main client logic
 │       ├── receive_msg.c    # Message receiving thread
 │       └── parse_msg.c      # Message parsing utilities
-├── Dockerfile
-├── docker-compose.yml
+├── Dockerfile               # Container config
+├── docker-compose.yml       # Compose file
 ├── Makefile                 # Build configuration
-└── README.md               # This file
+├── setup.sh                 # script to start a client
+└── README.md                # This file
 ```
 
 ## 🚀 Development
