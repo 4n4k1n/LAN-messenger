@@ -9,33 +9,29 @@ void	generate_id(char *id)
 	int	unique;
 	int	random_id;
 
-#ifdef DEBUG
-	printf(COLOR_CYAN "[DEBUG]" COLOR_RESET " Starting ID generation (mutex already locked)\n");
-#endif
+	if (DEBUG)
+		printf(COLOR_CYAN "[DEBUG]" COLOR_RESET " Starting ID generation (mutex already locked)\n");
 	unique = 0;
 	while (!unique)
 	{
 		random_id = rand() % 9000 + 1000;
 		snprintf(id, ID_SIZE, "%d", random_id);
-#ifdef DEBUG
+	if (DEBUG)
 		printf(COLOR_CYAN "[DEBUG]" COLOR_RESET " Trying ID: " COLOR_YELLOW "%s" COLOR_RESET "\n", id);
-#endif
 		unique = 1;
 		for (int i = 0; i < client_count; i++)
 		{
 			if (clients[i].active && strcmp(id, clients[i].id) == 0)
 			{
-#ifdef DEBUG
-				printf(COLOR_CYAN "[DEBUG]" COLOR_RESET " ID " COLOR_YELLOW "%s" COLOR_RESET " already exists, retrying\n", id);
-#endif
+				if (DEBUG)
+					printf(COLOR_CYAN "[DEBUG]" COLOR_RESET " ID " COLOR_YELLOW "%s" COLOR_RESET " already exists, retrying\n", id);
 				unique = 0;
 				break;
 			}
 		}
 	}
-#ifdef DEBUG
-	printf(COLOR_CYAN "[DEBUG]" COLOR_RESET " ID generation complete: " COLOR_BRIGHT_GREEN "%s" COLOR_RESET "\n", id);
-#endif
+	if (DEBUG)
+		printf(COLOR_CYAN "[DEBUG]" COLOR_RESET " ID generation complete: " COLOR_BRIGHT_GREEN "%s" COLOR_RESET "\n", id);
 }
 
 int	send_to_client(int client_index, const char *msg)
@@ -200,11 +196,27 @@ void	*handle_client(void *arg)
 	return (NULL);
 }
 
+char *get_ip_address(void)
+{
+	char hostbuffer[256];
+	struct hostent *host_entry;
+	struct in_addr addr;
+	
+	if (gethostname(hostbuffer, sizeof(hostbuffer)) == -1)
+		return (perror("gethostname error!"), NULL);
+	host_entry = gethostbyname(hostbuffer);
+	if (!host_entry)
+		return (perror("gethostbyname error!"), NULL);
+	memcpy(&addr, host_entry->h_addr_list[0], sizeof(struct in_addr));
+	return inet_ntoa(addr);
+}
+
 int	main(void)
 {
 	int					server_socket;
 	int					opt;
 	struct sockaddr_in	server_addr;
+	char				*ip_addr;
 
 	srand(time(NULL));
 	server_socket = socket(AF_INET, SOCK_STREAM, 0);
@@ -221,7 +233,10 @@ int	main(void)
         return (perror("Bind failed"), close(server_socket), 1);
 	if (listen(server_socket, 5) < 0)
 		return (perror("listen failed!"), close(server_socket), 1);
-	printf(COLOR_BRIGHT_GREEN "[SERVER]" COLOR_RESET " Chat server listening on port " COLOR_BOLD_YELLOW "%d" COLOR_RESET "\n", SERVER_PORT);
+	ip_addr = get_ip_address();
+	if (!ip_addr)
+		return (close(server_socket), 1);
+	printf(COLOR_BRIGHT_GREEN "[SERVER]" COLOR_RESET " Chat server listening on " COLOR_BOLD_YELLOW "%s : %d" COLOR_RESET "\n", ip_addr, SERVER_PORT);
     printf(COLOR_BRIGHT_GREEN "[SERVER]" COLOR_RESET " Press " COLOR_BOLD_RED "Ctrl+C" COLOR_RESET " to stop\n");
 	while (1)
 		accept_client(server_socket);

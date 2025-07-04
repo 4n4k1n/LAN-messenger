@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   messenger.h                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: anakin <anakin@student.42.fr>              +#+  +:+       +#+        */
+/*   By: apregitz <apregitz@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/30 07:20:09 by anakin            #+#    #+#             */
-/*   Updated: 2025/07/01 20:41:37 by anakin           ###   ########.fr       */
+/*   Updated: 2025/07/04 12:31:06 by apregitz         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,6 +23,7 @@
 # include <pthread.h>       // threading
 # include <time.h>          // time, srand
 # include <errno.h>         // error handling
+#include <netdb.h>			// get host name
 
 extern int socket_fd;
 
@@ -46,7 +47,9 @@ extern int socket_fd;
 // Flush output
 # define FLUSH fflush(stdout);
 
-# define MAX_MESSGE_LEN 2048
+# ifndef DEBUG
+#  define DEBUG 0
+# endif
 
 // ANSI Color codes
 # define COLOR_RESET   "\033[0m"
