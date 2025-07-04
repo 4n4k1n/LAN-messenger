@@ -1,4 +1,4 @@
-# 🚀 Local Network Messenger
+# 🚀 LAN Messenger
 
 A high-performance, multi-threaded chat application built in C using TCP sockets. Features real-time messaging, colorful terminal output, and robust client-server architecture.
 
@@ -18,14 +18,14 @@ use this command to join a server
 
 if executed type in the server ip address
 ```bash
-bash <(curl -L https://raw.githubusercontent.com/4n4k1n/local-network-messenger/refs/heads/main/setup.sh)
+bash <(curl -L https://raw.githubusercontent.com/4n4k1n/LAN-messenger/refs/heads/main/setup.sh)
 ```
 
 ### Quick Start
 ```bash
 # Clone the repository
-git clone https://github.com/4n4k1n/local-network-messenger.git
-cd local-network-messenger
+git clone https://github.com/4n4k1n/LAN-messenger.git
+cd LAN-messenger
 
 # Build the application
 make
@@ -143,7 +143,7 @@ NOTIFY:notification
 ## 📁 Project Structure
 
 ```
-local-network-messenger/
+LAN-messenger/
 ├── inc/
 │   └── messenger.h          # Header with prototypes and constants
 ├── src/
